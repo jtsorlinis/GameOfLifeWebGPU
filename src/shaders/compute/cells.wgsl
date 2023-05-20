@@ -62,23 +62,517 @@ fn main(@builtin(global_invocation_id) id : vec3<u32>) {
     clearBit(&output, 0);
   }
 
-  // All middle cells (Bits 1-30)
-  for (var i = 1u; i < 31; i++) {
-    neighbours = getBit(top, i - 1);
-    neighbours += getBit(top, i);
-    neighbours += getBit(top, i + 1);
-    neighbours += getBit(cell, i - 1);
-    neighbours += getBit(cell, i + 1);
-    neighbours += getBit(bottom, i - 1);
-    neighbours += getBit(bottom, i);
-    neighbours += getBit(bottom, i + 1);
+  // Manually unroll the loop for the middle cells because WGSL doesn't seem to want to unroll this for us
+  // Unrolling in this case doubles performance
+  
+  var i = 1u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
 
-    alive = getBit(cell, i);
-    if ((bool(alive) && neighbours == 2) || neighbours == 3) {
-      setBit(&output, i);
-    } else {
-      clearBit(&output, i);
-    }
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 2u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 3u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 4u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 5u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 6u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 7u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 8u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 9u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 10u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 11u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 12u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 13u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 14u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 15u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 16u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 17u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 18u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 19u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 20u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 21u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 22u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 23u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 24u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 25u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 26u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 27u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 28u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 29u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
+  }
+
+  i = 30u;
+  neighbours = getBit(top, i - 1);
+  neighbours += getBit(top, i);
+  neighbours += getBit(top, i + 1);
+  neighbours += getBit(cell, i - 1);
+  neighbours += getBit(cell, i + 1);
+  neighbours += getBit(bottom, i - 1);
+  neighbours += getBit(bottom, i);
+  neighbours += getBit(bottom, i + 1);
+
+  alive = getBit(cell, i);
+  if ((bool(alive) && neighbours == 2) || neighbours == 3) {
+    setBit(&output, i);
+  } else {
+    clearBit(&output, i);
   }
 
   // Rightmost cell (Bit 31)
