@@ -20,73 +20,100 @@ const aspectRatio = engine.getRenderWidth() / engine.getRenderHeight();
 const fpsText = document.getElementById("fpsText") as HTMLElement;
 const cellsText = document.getElementById("cellsText") as HTMLElement;
 const gpuToggle = document.getElementById("gpuToggle") as HTMLInputElement;
+const bigToggle = document.getElementById("bigToggle") as HTMLInputElement;
 const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 let useGpu = gpuToggle.checked;
 
-const targetNumberOfCells = 2000000;
-let height = Math.ceil(Math.sqrt(targetNumberOfCells / aspectRatio));
+const cpuCells = 2000000;
+const gpuCells = 4000000000;
 
-// Round to nearest even
-height -= height % 2;
-let width = Math.floor(height * aspectRatio);
-width -= width % 32;
-const gridWidth = width / 32;
-const totalCells = width * height;
-cellsText.innerText = "Cells: " + totalCells.toLocaleString();
+let totalCells: number;
+let gridWidth: number;
+let cellsCpu1: Uint32Array;
+let cellsCpu2: Uint32Array;
+let cellsBuffer: StorageBuffer;
+let cellsBuffer2: StorageBuffer;
+let computeGroups: Vector2;
+let orthoSize: number;
+let targetZoom: number;
+let swap: boolean;
+let targetNumberOfCells = cpuCells;
 
-let orthoSize = height / 128;
-camera.orthoTop = orthoSize;
-camera.orthoBottom = -orthoSize;
-camera.orthoLeft = -orthoSize * aspectRatio;
-camera.orthoRight = orthoSize * aspectRatio;
-
-let targetZoom = orthoSize;
-
-// Material
-const quadMat = createQuadMaterial(scene);
-
-// Compute shaders
-const generateCellsComputeShader = createGenerateCellsComputeShader(engine);
-const cellsComputeShader = createCellsComputeShader(engine);
-const computeGroups = new Vector2(
-  Math.ceil(gridWidth / 8),
-  Math.ceil(height / 8)
-);
-
-// Buffers
+// params
 const params = new UniformBuffer(engine);
 params.addUniform("width", 1);
 params.addUniform("gridWidth", 1);
 params.addUniform("height", 1);
 params.addUniform("zoom", 1);
 params.addUniform("rngSeed", 1);
-params.updateUInt("width", width);
-params.updateUInt("gridWidth", gridWidth);
-params.updateUInt("height", height);
-params.updateFloat("zoom", orthoSize);
-params.updateUInt("rngSeed", randUint());
-params.update();
 
-const bufferLength = gridWidth * height * 4;
-const cellsBuffer = new StorageBuffer(engine, bufferLength);
-const cellsBuffer2 = new StorageBuffer(engine, bufferLength);
-
-// Bind buffers
+// Compute shaders
+const generateCellsComputeShader = createGenerateCellsComputeShader(engine);
 generateCellsComputeShader.setUniformBuffer("params", params);
-generateCellsComputeShader.setStorageBuffer("cells", cellsBuffer);
+const cellsComputeShader = createCellsComputeShader(engine);
 cellsComputeShader.setUniformBuffer("params", params);
-quadMat.setUniformBuffer("params", params);
-quadMat.setStorageBuffer("cells", cellsBuffer);
 
+// Material
+const quadMat = createQuadMaterial(scene);
+quadMat.setUniformBuffer("params", params);
+
+// Mesh
 const quad = MeshBuilder.CreatePlane("plane", { size: 1 }, scene);
-quad.scaling.x = width / 64;
-quad.scaling.y = height / 64;
 quad.material = quadMat;
 
-// Generate cells
-const cellsCpu1 = new Uint32Array(bufferLength);
-const cellsCpu2 = new Uint32Array(bufferLength);
-generateCellsComputeShader.dispatch(computeGroups.x, computeGroups.y, 1);
+const setup = () => {
+  // Calculate cell count based on target number of cells
+  let height = Math.floor(Math.sqrt(targetNumberOfCells / aspectRatio));
+
+  // Round up to nearest even number
+  height -= (height % 2) - 2;
+  let width = Math.floor(height * aspectRatio);
+  // Round up to nearest multiple of 32
+  width -= (width % 32) - 32;
+  gridWidth = width / 32;
+  totalCells = width * height;
+  cellsText.innerText = "Cells: " + totalCells.toLocaleString();
+
+  // Camera and quad setup
+  orthoSize = height / 128;
+  camera.orthoTop = orthoSize;
+  camera.orthoBottom = -orthoSize;
+  camera.orthoLeft = -orthoSize * aspectRatio;
+  camera.orthoRight = orthoSize * aspectRatio;
+  targetZoom = orthoSize;
+  quad.scaling.x = width / 64;
+  quad.scaling.y = height / 64;
+
+  // Calculate compute dispatches
+  computeGroups = new Vector2(Math.ceil(gridWidth / 8), Math.ceil(height / 8));
+
+  // Update params
+  params.updateUInt("width", width);
+  params.updateUInt("gridWidth", gridWidth);
+  params.updateUInt("height", height);
+  params.updateFloat("zoom", orthoSize);
+  params.updateUInt("rngSeed", randUint());
+  params.update();
+
+  // Create arrays and buffers
+  const bufferLength = gridWidth * height * 4;
+  if (targetNumberOfCells === cpuCells) {
+    cellsCpu1 = new Uint32Array(bufferLength);
+    cellsCpu2 = new Uint32Array(bufferLength);
+  }
+  cellsBuffer = new StorageBuffer(engine, bufferLength);
+  cellsBuffer2 = new StorageBuffer(engine, bufferLength);
+
+  // Bind buffers
+  generateCellsComputeShader.setStorageBuffer("cells", cellsBuffer);
+  quadMat.setStorageBuffer("cells", cellsBuffer);
+
+  // Generate cells
+  generateCellsComputeShader.dispatch(computeGroups.x, computeGroups.y, 1);
+  swap = false;
+};
+
+setup();
 
 gpuToggle.onchange = async () => {
   if (!gpuToggle.checked) {
@@ -95,6 +122,15 @@ gpuToggle.onchange = async () => {
     cellsIn.set(new Uint32Array(buffer.buffer));
   }
   useGpu = gpuToggle.checked;
+  bigToggle.disabled = !useGpu;
+};
+
+bigToggle.onchange = () => {
+  cellsBuffer.dispose();
+  cellsBuffer2.dispose();
+  targetNumberOfCells = bigToggle.checked ? gpuCells : cpuCells;
+  gpuToggle.disabled = bigToggle.checked;
+  setup();
 };
 
 canvas.onwheel = (e) => {
@@ -111,7 +147,6 @@ canvas.onpointermove = (e) => {
   }
 };
 
-let swap = false;
 engine.runRenderLoop(() => {
   fpsText.innerText = "FPS: " + engine.getFps().toFixed(2);
   smoothZoom();
