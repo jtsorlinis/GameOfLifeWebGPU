@@ -104,6 +104,13 @@ canvas.onwheel = (e) => {
   }
 };
 
+canvas.onpointermove = (e) => {
+  if (e.buttons) {
+    camera.position.x -= e.movementX * 0.002 * orthoSize;
+    camera.position.y += e.movementY * 0.002 * orthoSize;
+  }
+};
+
 let swap = false;
 engine.runRenderLoop(() => {
   fpsText.innerText = "FPS: " + engine.getFps().toFixed(2);
