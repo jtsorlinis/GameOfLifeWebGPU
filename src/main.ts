@@ -21,10 +21,11 @@ const fpsText = document.getElementById("fpsText") as HTMLElement;
 const cellsText = document.getElementById("cellsText") as HTMLElement;
 const gpuToggle = document.getElementById("gpuToggle") as HTMLInputElement;
 const bigToggle = document.getElementById("bigToggle") as HTMLInputElement;
+const zoomOutText = document.getElementById("zoomOut") as HTMLElement;
 const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 let useGpu = gpuToggle.checked;
 
-const cpuCells = 2000000;
+const cpuCells = 1000000;
 const gpuCells = 4000000000;
 
 let totalCells: number;
@@ -61,6 +62,17 @@ quadMat.setUniformBuffer("params", params);
 const quad = MeshBuilder.CreatePlane("plane", { size: 1 }, scene);
 quad.material = quadMat;
 
+// Setup camera
+camera.position.x = 0;
+camera.position.y = 0;
+orthoSize = Math.floor(Math.sqrt(cpuCells / aspectRatio)) / 128 + 0.25;
+targetZoom = orthoSize;
+camera.orthoTop = orthoSize;
+camera.orthoBottom = -orthoSize;
+camera.orthoLeft = -orthoSize * aspectRatio;
+camera.orthoRight = orthoSize * aspectRatio;
+const maxZoom = Math.floor(Math.sqrt(gpuCells / aspectRatio)) / 128;
+
 const setup = () => {
   // Calculate cell count based on target number of cells
   let height = Math.floor(Math.sqrt(targetNumberOfCells / aspectRatio));
@@ -74,13 +86,7 @@ const setup = () => {
   totalCells = width * height;
   cellsText.innerText = "Cells: " + totalCells.toLocaleString();
 
-  // Camera and quad setup
-  orthoSize = height / 128;
-  camera.orthoTop = orthoSize;
-  camera.orthoBottom = -orthoSize;
-  camera.orthoLeft = -orthoSize * aspectRatio;
-  camera.orthoRight = orthoSize * aspectRatio;
-  targetZoom = orthoSize;
+  // Scale quad to fit cells
   quad.scaling.x = width / 64;
   quad.scaling.y = height / 64;
 
@@ -130,14 +136,19 @@ bigToggle.onchange = () => {
   cellsBuffer2.dispose();
   targetNumberOfCells = bigToggle.checked ? gpuCells : cpuCells;
   gpuToggle.disabled = bigToggle.checked;
+  if (bigToggle.checked) {
+    zoomOutText.style.display = "block";
+    setTimeout(() => {
+      zoomOutText.style.opacity = "0";
+    }, 2000);
+  }
   setup();
 };
 
 canvas.onwheel = (e) => {
   const zoomDelta = e.deltaY * orthoSize * 0.001;
-  if (targetZoom + zoomDelta > 0.2) {
-    targetZoom += zoomDelta;
-  }
+  targetZoom += zoomDelta;
+  targetZoom = Math.min(Math.max(targetZoom, 0.2), maxZoom + 20);
 };
 
 canvas.onpointermove = (e) => {
